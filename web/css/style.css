@@ -1,0 +1,17 @@
+html {
+  color: black;
+}
+
+nav .brand-logo {
+  color: #fff;
+}
+
+nav a, 
+nav ul a {
+  color: #fff;
+}
+
+.bg-white {
+    background-color: #ffffff !important;
+}
+

@@ -246,8 +246,8 @@ class FormulirController extends Controller {
                 }
             }
         } else {
-           // echo $model->Kuantitas;
-           // exit();
+            // echo $model->Kuantitas;
+            // exit();
             return $this->render('update', [
                         'model' => $model,
                         'modelUser' => $modelUser,
@@ -290,7 +290,7 @@ class FormulirController extends Controller {
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id) {
-        if (($model = Formulir::find()->with('idUnsur')->where(['IdFormulir'=>$id])->one()) !== null) {
+        if (($model = Formulir::find()->with('idUnsur')->where(['IdFormulir' => $id])->one()) !== null) {
             //print_r($model);
             //exit();
             return $model;
@@ -338,10 +338,40 @@ class FormulirController extends Controller {
         $mpdf->Output("Pengukuran_SKP_" . Yii::$app->user->username . ".pdf", "I");
         exit();
     }
-    
+
+    function copyRows(PHPExcel_Worksheet $sheet, $srcRow, $dstRow, $height, $width) {
+        for ($row = 0; $row < $height; $row++) {
+            for ($col = 0; $col < $width; $col++) {
+                $cell = $sheet->getCellByColumnAndRow($col, $srcRow + $row);
+                $style = $sheet->getStyleByColumnAndRow($col, $srcRow + $row);
+                $dstCell = PHPExcel_Cell::stringFromColumnIndex($col) . (string) ($dstRow + $row);
+                $sheet->setCellValue($dstCell, $cell->getValue());
+                $sheet->duplicateStyle($style, $dstCell);
+            }
+
+            $h = $sheet->getRowDimension($srcRow + $row)->getRowHeight();
+            $sheet->getRowDimension($dstRow + $row)->setRowHeight($h);
+        }
+
+        foreach ($sheet->getMergeCells() as $mergeCell) {
+            $mc = explode(":", $mergeCell);
+            $col_s = preg_replace("/[0-9]*/", "", $mc[0]);
+            $col_e = preg_replace("/[0-9]*/", "", $mc[1]);
+            $row_s = ((int) preg_replace("/[A-Z]*/", "", $mc[0])) - $srcRow;
+            $row_e = ((int) preg_replace("/[A-Z]*/", "", $mc[1])) - $srcRow;
+
+            if (0 <= $row_s && $row_s < $height) {
+                $merge = $col_s . (string) ($dstRow + $row_s) . ":" . $col_e . (string) ($dstRow + $row_e);
+                $sheet->mergeCells($merge);
+            }
+        }
+    }
+
     public function actionExportExcelHitungTarget($id) {
-        $formtargetUtama = Yii::$app->db->createCommand("SELECT * FROM formulir F LEFT JOIN unsur U ON F.IdUnsur=U.IdUnsur LEFT JOIN formulir_master FM ON FM.IdFormulirMaster=F.IdFormulirMaster WHERE F.IdFormulirMaster=$id AND U.IdJenisUnsur=1")->queryAll();
-        $formtargetPenunjang = Yii::$app->db->createCommand("SELECT * FROM formulir F INNER JOIN unsur U ON F.IdUnsur=U.IdUnsur LEFT JOIN formulir_master FM ON FM.IdFormulirMaster=F.IdFormulirMaster WHERE F.IdFormulirMaster=$id AND U.IdJenisUnsur=2")->queryAll();
+        $formtargetUtamaFG = Yii::$app->db->createCommand("SELECT * FROM formulir F LEFT JOIN unsur U ON F.IdUnsur=U.IdUnsur LEFT JOIN formulir_master FM ON FM.IdFormulirMaster=F.IdFormulirMaster WHERE F.IdFormulirMaster=$id AND U.IdJenisUnsur=1 and F.jenisForm='FG'")->queryAll();
+        $formtargetPenunjangFG = Yii::$app->db->createCommand("SELECT * FROM formulir F INNER JOIN unsur U ON F.IdUnsur=U.IdUnsur LEFT JOIN formulir_master FM ON FM.IdFormulirMaster=F.IdFormulirMaster WHERE F.IdFormulirMaster=$id AND U.IdJenisUnsur=2 and F.jenisForm='FG'")->queryAll();
+        $formtargetUtamaFK = Yii::$app->db->createCommand('SELECT * FROM formulir f INNER JOIN unsur u ON f.IdUnsur=u.IdUnsur  LEFT JOIN formulir_master fm on fm.idFormulirMaster=f.idFormulirMaster where fm.idFormulirMaster=' . $id . ' and u.IdJenisUnsur=1 and fm.idFormulirMaster=' . $id . ' and f.jenisForm="FK"')->queryAll();
+        $formtargetPenunjangFK = Yii::$app->db->createCommand('SELECT * FROM formulir f LEFT JOIN unsur u ON f.IdUnsur=u.IdUnsur LEFT JOIN formulir_master fm on fm.idFormulirMaster=f.idFormulirMaster where fm.idFormulirMaster=' . $id . ' and u.IdJenisUnsur=2 and fm.idFormulirMaster=' . $id . ' and f.jenisForm="FK"')->queryAll();
         $objReader = \PHPExcel_IOFactory::createReader('Excel2007');
         $template = Yii::getAlias('@app/views/formulir') . '/_exportHitungToExcel.xlsx';
         $objPHPExcel = $objReader->load($template);
@@ -351,7 +381,7 @@ class FormulirController extends Controller {
         $baseUtama = 8;
         $baris = 1;
         $border_style = array('borders' => array('allborders' => array('style' => \PHPExcel_Style_Border::BORDER_THIN)));
-        foreach ($formtargetUtama as $value) {
+        foreach ($formtargetUtamaFG as $value) {
             $activeSheet->setCellValue('A' . $baseUtama, $baris);
             $activeSheet->setCellValue('B' . $baseUtama, $value['NamaUnsur']);
             $activeSheet->setCellValue('C' . $baseUtama, $value['AK']);
@@ -375,13 +405,16 @@ class FormulirController extends Controller {
             $baris++;
             $baseUtama++;
         }
+
+
+
         $baseUtamaPenunjang = $baseUtama + 1;
         $barisPenunjang = 1;
-       // $activeSheet->mergeCells('B' . $baseUtamaPenunjang . ':' . 'D' . $baseUtamaPenunjang);
+        // $activeSheet->mergeCells('B' . $baseUtamaPenunjang . ':' . 'D' . $baseUtamaPenunjang);
         $activeSheet->setCellValue('B' . $baseUtama, '2. Unsur Penunjang');
         $objPHPExcel->getActiveSheet()->getStyle("A$baseUtama:R$baseUtama")->getFont()->setSize(7);
         $objPHPExcel->getActiveSheet()->getStyle("A$baseUtama:R$baseUtama")->applyFromArray($border_style);
-        foreach ($formtargetPenunjang as $value) {
+        foreach ($formtargetPenunjangFG as $value) {
             $activeSheet->setCellValue('A' . $baseUtamaPenunjang, $barisPenunjang);
             $activeSheet->setCellValue('B' . $baseUtamaPenunjang, $value['NamaUnsur']);
             $activeSheet->setCellValue('C' . $baseUtamaPenunjang, $value['AK']);
@@ -406,16 +439,98 @@ class FormulirController extends Controller {
         $activeSheet->setCellValue('B' . $baseUtamaPenunjang, 'Jumlah');
         $objPHPExcel->getActiveSheet()->getStyle("A$baseUtamaPenunjang:R$baseUtamaPenunjang")->getFont()->setSize(7);
         $objPHPExcel->getActiveSheet()->getStyle("A$baseUtamaPenunjang:R$baseUtamaPenunjang")->applyFromArray($border_style);
-        $baseSum=$baseUtamaPenunjang-1;
-        $objPHPExcel->getActiveSheet()->setCellValue('C'.$baseUtamaPenunjang, "=SUM(C8:C$baseSum)");
+        $baseSum = $baseUtamaPenunjang - 1;
+        $objPHPExcel->getActiveSheet()->setCellValue('C' . $baseUtamaPenunjang, "=SUM(C8:C$baseSum)");
         $objPHPExcel->getActiveSheet()->getStyle('C' . $baseUtamaPenunjang)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+        $baseUtamaFK = 8;
+        $border_style = array('borders' => array('allborders' => array('style' => \PHPExcel_Style_Border::BORDER_THIN)));
+        foreach ($formtargetUtamaFK as $value) {
+            $activeSheet->setCellValue('J' . $baseUtamaFK, $value['AK']);
+            $activeSheet->setCellValue('K' . $baseUtamaFK, $value['Kuantitas']);
+            $activeSheet->setCellValue('L' . $baseUtamaFK, $value['Output']);
+            $activeSheet->setCellValue('M' . $baseUtamaFK, $value['Mutu']);
+            $activeSheet->setCellValue('N' . $baseUtamaFK, $value['Waktu']);
+            $activeSheet->setCellValue('O' . $baseUtamaFK, 'Bulan');
+            $activeSheet->setCellValue('P' . $baseUtamaFK, '-');
+            //$tes="IF((100-(N$baseUtamaFK/G$baseUtamaFK*100)):(((K$baseUtamaFK/D$baseUtamaFK*100)+(M$baseUtamaFK/F$baseUtamaFK*100)+(76-((((1,76*G$baseUtamaFK-N$baseUtamaFK)/G$baseUtamaFK)*100)-100)))):(((K$baseUtamaFK/D$baseUtamaFK*100)+(M$baseUtamaFK/F$baseUtamaFK*100)+(((1,76*G$baseUtamaFK-N$baseUtamaFK)/G$baseUtamaFK)*100))))";
+            //$activeSheet->setCellValue('Q' . $baseUtamaFK, '='.$tes);
+           // $cellValues = $objPHPExcel->getActiveSheet()->rangeToArray('Q8');
+            //$objPHPExcel->getActiveSheet()->fromArray($cellValues, null, "Q$baseUtamaFK");
+            //$formula = "=IF((100-(N$baseUtamaFK/G$baseUtamaFK*100));(((K$baseUtamaFK/D$baseUtamaFK*100)+(M$baseUtamaFK/F$baseUtamaFK*100)+(76-((((1,76*G$baseUtamaFK-N$baseUtamaFK)/G$baseUtamaFK)*100)-100))));(((K$baseUtamaFK/D$baseUtamaFK*100)+(M$baseUtamaFK/F$baseUtamaFK*100)+(((1,76*G$baseUtamaFK-N$baseUtamaFK)/G$baseUtamaFK)*100))))";
+            $objPHPExcel->getActiveSheet()->getRowDimension($baseUtamaFK)->setRowHeight(70);
+            $objPHPExcel->getActiveSheet()->getStyle("J8:R$baseUtamaFK")->getFont()->setSize(7);
+            //$objPHPExcel->getActiveSheet()->getStyle("A8:K$baseUtama")->getFont()->setSize(9)->applyFromArray($border_style);
+            $objPHPExcel->getActiveSheet()->getStyle("J8:R$baseUtamaFK")->applyFromArray($border_style);
+            $objPHPExcel->getActiveSheet()->getStyle("J8:R$baseUtamaFK")->applyFromArray($border_style);
+            $baseUtamaFK++;
+        }
+        $baseUtamaPenunjangFK = $baseUtamaFK + 1;
+        $barisPenunjangFK = 1;
+        // $activeSheet->mergeCells('B' . $baseUtamaPenunjang . ':' . 'D' . $baseUtamaPenunjang);
+        $activeSheet->setCellValue('B' . $baseUtama, '2. Unsur Penunjang');
+        $objPHPExcel->getActiveSheet()->getStyle("A$baseUtama:R$baseUtama")->getFont()->setSize(7);
+        $objPHPExcel->getActiveSheet()->getStyle("A$baseUtama:R$baseUtama")->applyFromArray($border_style);
+        foreach ($formtargetPenunjangFG as $value) {
+            $activeSheet->setCellValue('J' . $baseUtamaPenunjangFK, $value['AK']);
+            $activeSheet->setCellValue('K' . $baseUtamaPenunjangFK, $value['Kuantitas']);
+            $activeSheet->setCellValue('L' . $baseUtamaPenunjangFK, $value['Output']);
+            $activeSheet->setCellValue('M' . $baseUtamaPenunjangFK, $value['Mutu']);
+            $activeSheet->setCellValue('N' . $baseUtamaPenunjangFK, $value['Waktu']);
+            $activeSheet->setCellValue('O' . $baseUtamaPenunjangFK, 'Bulan');
+            $activeSheet->setCellValue('P' . $baseUtamaPenunjangFK, '-');
+           
+            // $activeSheet->setCellValue('Q'.$baseUtamaPenunjangFK,"=IF((100-(N$baseUtamaPenunjangFK/G$baseUtamaPenunjangFK*100));(((K$baseUtamaPenunjangFK/D$baseUtamaPenunjangFK*100)+(M$baseUtamaPenunjangFK/F$baseUtamaPenunjangFK*100)+(76-((((1,76*G$baseUtamaPenunjangFK-N$baseUtamaPenunjangFK)/G$baseUtamaPenunjangFK)*100)-100))));(((K$baseUtamaPenunjangFK/D$baseUtamaPenunjangFK*100)+(M$baseUtamaPenunjangFK/F$baseUtamaPenunjangFK*100)+(((1,76*G$baseUtamaPenunjangFK-N$baseUtamaPenunjangFK)/G$baseUtamaPenunjangFK)*100))))");
+            $objPHPExcel->getActiveSheet()->getStyle('J' . $baseUtamaPenunjangFK . ':' . 'R' . $baseUtamaPenunjangFK)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setWrapText(true);
+            $objPHPExcel->getActiveSheet()->getStyle('J' . $baseUtamaPenunjangFK . ':' . 'R' . $baseUtamaPenunjangFK)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
+            $objPHPExcel->getActiveSheet()->getRowDimension($baseUtamaPenunjangFK)->setRowHeight(50);
+            $objPHPExcel->getActiveSheet()->getStyle("J$baseUtamaPenunjangFK:R$baseUtamaPenunjangFK")->getFont()->setSize(7);
+            $objPHPExcel->getActiveSheet()->getStyle("J$baseUtamaPenunjangFK:R$baseUtamaPenunjangFK")->applyFromArray($border_style);
+            $barisPenunjangFK++;
+            $baseUtamaPenunjangFK++;
+        }
+        $objPHPExcel->getActiveSheet()->getStyle("A$baseUtamaPenunjang:R$baseUtamaPenunjang")->getFont()->setSize(7);
+        $objPHPExcel->getActiveSheet()->getStyle("A$baseUtamaPenunjang:R$baseUtamaPenunjang")->applyFromArray($border_style);
+        $baseSumUkur = $baseUtamaPenunjangFK - 1;
+        $objPHPExcel->getActiveSheet()->setCellValue('J' . $baseUtamaPenunjang, "=SUM(J8:J$baseSumUkur)");
+        $objPHPExcel->getActiveSheet()->setCellValue('R' . $baseUtamaPenunjang, "=AVERAGE(R8:R$baseSumUkur)");
+        $tambah=$baseUtamaPenunjang;
+        $tambah1=$baseUtamaPenunjang+1;
+        $ifform= '=IF(R'.$tambah.'<=50,"(Buruk)",IF(R'.$tambah.'<=60,"(Sedang)",IF(R'.$tambah.'<=75,"(Cukup)",IF(R'.$tambah.'<=90.99,"(Baik)","(Sangat Baik)"))))';
+        $fres= \PHPExcel_Calculation::getInstance($objPHPExcel)->calculateFormula($ifform,'R16',$objPHPExcel->getActiveSheet()->getCell('R16'));
+        //echo $fres;
+        //exit();
+        $objPHPExcel->getActiveSheet()->setCellValue('R' . $tambah1, $fres);
+        $objPHPExcel->getActiveSheet()->getStyle("R$tambah1:R$tambah1")->getFont()->setSize(7);
+        
+        $objPHPExcel->getActiveSheet()->getStyle('B' . $baseUtamaPenunjang . ':' . 'R' . $baseUtamaPenunjang)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setWrapText(true);
+        $objPHPExcel->getActiveSheet()->getStyle('B' . $baseUtamaPenunjang . ':' . 'R' . $baseUtamaPenunjang)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
+        
+        $objPHPExcel->getActiveSheet()->getStyle('R' . $tambah1 . ':' . 'R' . $tambah1)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setWrapText(true);
+        $objPHPExcel->getActiveSheet()->getStyle('R' . $tambah1 . ':' . 'R' . $tambah1)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
+           
+        //=IF(R23<=50;"(Buruk)";IF(R23<=60;"(Sedang)";IF(R23<=75;"(Cukup)";IF(R23<=90,99;"(Baik)";"(Sangat Baik)"))))
+        $activeSheet->mergeCells('O18:R18');
+        $activeSheet->mergeCells('O23:R23');
+        $now = new \DateTime();
+        $objPHPExcel->getActiveSheet()->setCellValue('O18', "Tanjungpinang,". $now->format('d-M-Y'));
+        $objPHPExcel->getActiveSheet()->setCellValue('O23','(..................................................)');
+        
+        $objPHPExcel->getActiveSheet()->getStyle('O18:O18')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setWrapText(true);
+        $objPHPExcel->getActiveSheet()->getStyle('O18:O18')->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
+       
+        $objPHPExcel->getActiveSheet()->getStyle('O23:O23')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setWrapText(true);
+        $objPHPExcel->getActiveSheet()->getStyle('O23:O23')->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
+        $objPHPExcel->getActiveSheet()->getStyle("O18")->getFont()->setSize(7);
+        $objPHPExcel->getActiveSheet()->getStyle("O23")->getFont()->setSize(7);
         
         header("Pragma: public");
         header("Expires: 0");
         header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
         header("Content-Type: application/force-download");
         header("Content-Type: application/octet-stream");
-        header("Content-Type: application/download");;
+        header("Content-Type: application/download");
+        ;
         header("Content-Disposition: attachment;filename=_exportHitungToExcel.xlsx");
         header("Content-Transfer-Encoding: binary ");
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, "Excel2007");
@@ -464,7 +579,7 @@ class FormulirController extends Controller {
             $activeSheet->setCellValue('J' . $baseUtama, 'Bulan');
             $activeSheet->setCellValue('K' . $baseUtama, '-');
             $activeSheet->mergeCells('B' . $baseUtama . ':' . 'D' . $baseUtama);
-            
+
             $objPHPExcel->getActiveSheet()->getStyle('B' . $baseUtama)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_LEFT)->setWrapText(true);
             $objPHPExcel->getActiveSheet()->getStyle('E' . $baseUtama . ':' . 'K' . $baseUtama)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setWrapText(true);
             $objPHPExcel->getActiveSheet()->getStyle('B' . $baseUtama . ':' . 'K' . $baseUtama)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER)->setWrapText(true);
@@ -475,7 +590,7 @@ class FormulirController extends Controller {
             $baris++;
             $baseUtama++;
         }
-      
+
         $baseUtamaPenunjang = $baseUtama + 1;
         $barisPenunjang = 1;
         $activeSheet->mergeCells('B' . $baseUtama . ':' . 'D' . $baseUtama);
@@ -507,15 +622,19 @@ class FormulirController extends Controller {
         $activeSheet->setCellValue('B' . $baseUtamaPenunjang, 'Jumlah');
         $objPHPExcel->getActiveSheet()->getStyle("A13:K$baseUtamaPenunjang")->applyFromArray($border_style);
         $activeSheet->mergeCells('F' . $baseUtamaPenunjang . ':' . 'K' . $baseUtamaPenunjang);
-        $baseRata=$baseUtamaPenunjang-1;
-        $objPHPExcel->getActiveSheet()->setCellValue('E'.$baseUtamaPenunjang, "=SUM(E13:E$baseRata)");
+        $baseRata = $baseUtamaPenunjang - 1;
+        $objPHPExcel->getActiveSheet()->setCellValue('E' . $baseUtamaPenunjang, "=SUM(E13:E$baseRata)");
         $objPHPExcel->getActiveSheet()->getStyle('E' . $baseUtamaPenunjang)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
+
+        //\PhpExcel_Calculation_Par::cloneFormulaForRow("=SUM(A1:B1)",9); //"=SUM(A9:B9)" 
+
+
         header("Pragma: public");
         header("Expires: 0");
         header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
         header("Content-Type: application/force-download");
         header("Content-Type: application/octet-stream");
-        header("Content-Type: application/download");;
+        header("Content-Type: application/download");
         header("Content-Disposition: attachment;filename=_exportTarget.xlsx");
         header("Content-Transfer-Encoding: binary ");
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, "Excel2007");

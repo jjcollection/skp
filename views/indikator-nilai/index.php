@@ -1,35 +1,61 @@
 <?php
 
-use yii\helpers\Html;
-use yii\grid\GridView;
+use app\models\IndikatorNilaiSearch;
+use kartik\tabs\TabsX;
+use yii\data\ActiveDataProvider;
+use yii\jui\Tabs;
+use yii\web\View;
+use yii\widgets\ActiveForm;
 
-/* @var $this yii\web\View */
-/* @var $searchModel app\models\IndikatorNilaiSearch */
-/* @var $dataProvider yii\data\ActiveDataProvider */
+/* @var $this View */
+/* @var $searchModel IndikatorNilaiSearch */
+/* @var $dataProvider ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Indikator Nilais');
+$this->title = 'Indikator Nilai';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="indikator-nilai-index">
-
-    <h1><?= Html::encode($this->title) ?></h1>
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <p>
-        <?= Html::a(Yii::t('app', 'Create Indikator Nilai'), ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'idIndikatorNilai',
-            'idFormulirMaster',
-            'idIndikator',
-            'nilai',
-
-            ['class' => 'yii\grid\ActionColumn'],
+<?php
+echo TabsX::widget([
+    'position' => TabsX::POS_ABOVE,
+    'align' => TabsX::ALIGN_LEFT,
+    'items' => [
+        [
+            'label' => 'Pelayanan',
+            'content' => $this->render('_pelayanan', ['dataProviderPelayanan' => $dataProviderPelayanan, 'searchModel' => $searchModel,'idaktif'=>1]),
+            'active' => true
         ],
-    ]); ?>
+        [
+            'label' => 'Integritas',
+            'content' =>  $this->render('_integritas', ['dataProviderIntegritas' => $dataProviderIntegritas, 'searchModel' => $searchModel,'idaktif'=>2]),
+            'headerOptions' => ['style' => 'font-weight:bold'],
+           // 'options' => ['id' => 'myveryownID'],
+        ],
+        [
+            'label' => 'Komitmen',
+            'content' =>  $this->render('_komitmen', ['dataProviderKomitmen' => $dataProviderKomitmen, 'searchModel' => $searchModel,'idaktif'=>3]),
+            'headerOptions' => ['style' => 'font-weight:bold'],
+           // 'options' => ['id' => 'myveryownID'],
+        ],
+        [
+            'label' => 'Disiplin',
+            'content' =>  $this->render('_disiplin', ['dataProviderDisiplin' => $dataProviderDisiplin, 'searchModel' => $searchModel,'idaktif'=>4]),
+            'headerOptions' => ['style' => 'font-weight:bold'],
+           // 'options' => ['id' => 'myveryownID'],
+        ],
+        [
+            'label' => 'Kerjasama',
+            'content' =>  $this->render('_kerjasama', ['dataProviderKerjasama' => $dataProviderKerjasama, 'searchModel' => $searchModel,'idaktif'=>5]),
+            'headerOptions' => ['style' => 'font-weight:bold'],
+           // 'options' => ['id' => 'myveryownID'],
+        ],
+        [
+            'label' => 'Kepemimpinan',
+            'content' =>  $this->render('_kepemimpinan', ['dataProviderKepemimpinan' => $dataProviderKepemimpinan, 'searchModel' => $searchModel,'idaktif'=>6]),
+            'headerOptions' => ['style' => 'font-weight:bold'],
+           // 'options' => ['id' => 'myveryownID'],
+        ],
+    ],
+]);
+?>
+
 </div>

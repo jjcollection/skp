@@ -96,20 +96,20 @@ AppAsset::register($this);
                     <?php // Alert::widget() ?>
 
                     <?php
-                    if (Yii::$app->session['idFB'] != "") {
-                        $rata = FormulirMaster::akrata(Yii::$app->session['idFB'],'FG');
-                        if ($rata == "") {
-                            $rata = 0;
-                        }
-                        $idKriteria = FormulirMaster::pilihid(Yii::$app->session['idFB']);
-                        $namaKriteria = FormulirMaster::namakriteria($idKriteria);
-                        $totalrata = "Jumlah Angka Kredit : $rata";
-                        echo "<h4>Kriteria Pilihan anda adalah : <strong>$namaKriteria</strong>, ";
-                        echo $totalrata;
-                        echo "</h4>";
-                    } else {
-                        $pilihanKriteria = "Kriteria Belum Dipilih";
-                    }
+//                    if (Yii::$app->session['idFB'] != "") {
+//                        $rata = FormulirMaster::akrata(Yii::$app->session['idFB'],'FG');
+//                        if ($rata == "") {
+//                            $rata = 0;
+//                        }
+//                        $idKriteria = FormulirMaster::pilihid(Yii::$app->session['idFB']);
+//                        $namaKriteria = FormulirMaster::namakriteria($idKriteria);
+//                        $totalrata = "Jumlah Angka Kredit : $rata";
+//                        echo "<h4>Kriteria Pilihan anda adalah : <strong>$namaKriteria</strong>, ";
+//                        echo $totalrata;
+//                        echo "</h4>";
+//                    } else {
+//                        $pilihanKriteria = "Kriteria Belum Dipilih";
+//                    }
                     echo $content;
                     ?>
                 </div>
@@ -119,21 +119,26 @@ AppAsset::register($this);
                 <div class="container">
                     <div class="row">
                         <div class="col l6 s12">
-                            <h5 class="white-text">Footer Content</h5>
-                            <p class="white-text text-lighten-1">You can use rows and columns here to organize your footer content.</p>
+                            <h5 class="white-text">SMP 8 Tanjungpinang</h5>
+                            <p class="white-text text-lighten-1">Sistem Informasi Penilaian Sasaran Kerja Pegawai</p>
                         </div>
                         <div class="col l4 offset-l2 s12">
                             <h5 class="white-text">Links</h5>
-                            <li><a class="white-text" href="#!">Link 1</a></li>
-                            <li><a class="white-text" href="#!">Link 2</a></li>
-                            <li><a class="white-text" href="#!">Link 3</a></li>
-                            <li><a class="white-text" href="#!">Link 4</a></li>
+                            <li><a class="white-text" href="https://www.kepriprov.go.id/">Pemprov Kepri</a></li>
+                            <li><a class="white-text" href="http://tanjungpinangkota.go.id/home/">Pemko Tanjungpinang</a></li>
+                            <li><a class="white-text" href="http://tanjungpinang.siap.web.id/">Dinas Pendidikan</a></li>
+                            <li><a class="white-text" href="http://11000423.siap-sekolah.com/sekolah-profil/">SMPN 8 Tanjungpinang</a></li>
                         </div>
                     </div>
                 </div>
                 <div class="footer-copyright">
                     <div class="container white-text center">
-                        &copy; 2015 ThemeFactory.net
+                        &copy; 2017 SMPN 8 Tanjugpinang
+                        <?php
+//                echo Nav::widget([
+//                    'items' => MenuHelper::getAssignedMenu(Yii::$app->user->id)
+//                ]);
+                        ?>
                     </div>
                 </div>
             </footer>

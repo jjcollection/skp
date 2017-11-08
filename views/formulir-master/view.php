@@ -20,12 +20,11 @@ $this->params['breadcrumbs'][] = $this->title;
         $rolename = User::getRoleName();
         if ($rolename == 'kasek') {
             echo Html::a(Yii::t('yii', Icon::show('wrench') . 'Pengukuran SKP'), ['formulir/createold', 'id' => $model->idFormulirMaster], ['class' => 'btn btn-primary right']);
+            echo Html::a(Yii::t('yii', Icon::show('user') . 'Indikator'), ['indikator-nilai/index', 'id' => $model->idFormulirMaster], ['class' => 'btn btn-danger right']);
         } else {
             echo Html::a(Yii::t('yii', Icon::show('plus') . Yii::t('yii', 'Isi Form')), ['/formulir/create', 'id' => $model->idFormulirMaster], ['class' => 'btn btn-info']);
             echo Html::a(Yii::t('yii', Icon::show('print') . Yii::t('yii', 'Target')), ['formulir/export-target-excel', 'id' => $model->idFormulirMaster], ['class' => 'btn btn-primary']);
             echo Html::a(Yii::t('yii', Icon::show('print') . Yii::t('yii', 'Pengukuran')), ['formulir/export-excel-hitung-target', 'id' => $model->idFormulirMaster], ['class' => 'btn btn-success']);
-            echo Html::a(Yii::t('yii', Icon::show('print') . Yii::t('yii', 'Penilaian')), ['update', 'id' => $model->idFormulirMaster], ['class' => 'btn btn-danger']);
-            echo Html::a(Yii::t('yii', Icon::show('print') . Yii::t('yii', 'Rekomendasi')), ['update', 'id' => $model->idFormulirMaster], ['class' => 'btn btn-info']);
         }
         ?>
     </p>

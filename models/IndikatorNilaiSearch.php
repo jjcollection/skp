@@ -15,10 +15,11 @@ class IndikatorNilaiSearch extends IndikatorNilai
     /**
      * @inheritdoc
      */
+    public $idAspek;
     public function rules()
     {
         return [
-            [['idIndikatorNilai', 'idFormulirMaster', 'idIndikator'], 'integer'],
+            [['idIndikatorNilai', 'idFormulirMaster','idAspek', 'idIndikator'], 'integer'],
             [['nilai'], 'number'],
         ];
     }
@@ -39,11 +40,12 @@ class IndikatorNilaiSearch extends IndikatorNilai
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function searchPelayanan($params)
     {
-        $query = IndikatorNilai::find();
+        $query = IndikatorNilai::find()->join('INNER JOIN','indikator', 'indikator.idIndikator=indikator_nilai.idIndikator');
 
         // add conditions that should always apply here
+        
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -63,6 +65,158 @@ class IndikatorNilaiSearch extends IndikatorNilai
             'idFormulirMaster' => $this->idFormulirMaster,
             'idIndikator' => $this->idIndikator,
             'nilai' => $this->nilai,
+            'idAspek' => 1,
+        ]);
+
+        return $dataProvider;
+    }
+    public function searchIntegritas($params)
+    {
+        $query = IndikatorNilai::find()->join('INNER JOIN','indikator', 'indikator.idIndikator=indikator_nilai.idIndikator');
+
+        // add conditions that should always apply here
+        
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'idIndikatorNilai' => $this->idIndikatorNilai,
+            'idFormulirMaster' => $this->idFormulirMaster,
+            'idIndikator' => $this->idIndikator,
+            'nilai' => $this->nilai,
+            'idAspek' => 2,
+        ]);
+
+        return $dataProvider;
+    }
+    public function searchKomitmen($params)
+    {
+        $query = IndikatorNilai::find()->join('INNER JOIN','indikator', 'indikator.idIndikator=indikator_nilai.idIndikator');
+
+        // add conditions that should always apply here
+        
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'idIndikatorNilai' => $this->idIndikatorNilai,
+            'idFormulirMaster' => $this->idFormulirMaster,
+            'idIndikator' => $this->idIndikator,
+            'nilai' => $this->nilai,
+            'idAspek' => 3,
+        ]);
+
+        return $dataProvider;
+    }
+    public function searchDisiplin($params)
+    {
+        $query = IndikatorNilai::find()->join('INNER JOIN','indikator', 'indikator.idIndikator=indikator_nilai.idIndikator');
+
+        // add conditions that should always apply here
+        
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'idIndikatorNilai' => $this->idIndikatorNilai,
+            'idFormulirMaster' => $this->idFormulirMaster,
+            'idIndikator' => $this->idIndikator,
+            'nilai' => $this->nilai,
+             'idAspek' => 4,
+        ]);
+
+        return $dataProvider;
+    }
+    
+    public function searchKerjasama($params)
+    {
+        $query = IndikatorNilai::find()->join('INNER JOIN','indikator', 'indikator.idIndikator=indikator_nilai.idIndikator');
+
+        // add conditions that should always apply here
+        
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'idIndikatorNilai' => $this->idIndikatorNilai,
+            'idFormulirMaster' => $this->idFormulirMaster,
+            'idIndikator' => $this->idIndikator,
+            'nilai' => $this->nilai,
+             'idAspek' => 5,
+        ]);
+
+        return $dataProvider;
+    }
+    public function searchKepemimpinan($params)
+    {
+        $query = IndikatorNilai::find()->join('INNER JOIN','indikator', 'indikator.idIndikator=indikator_nilai.idIndikator');
+
+        // add conditions that should always apply here
+        
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+            // uncomment the following line if you do not want to return any records when validation fails
+            // $query->where('0=1');
+            return $dataProvider;
+        }
+
+        // grid filtering conditions
+        $query->andFilterWhere([
+            'idIndikatorNilai' => $this->idIndikatorNilai,
+            'idFormulirMaster' => $this->idFormulirMaster,
+            'idIndikator' => $this->idIndikator,
+            'nilai' => $this->nilai,
+            'idAspek' => 6,
         ]);
 
         return $dataProvider;

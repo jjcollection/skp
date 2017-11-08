@@ -22,7 +22,7 @@
         "kartik-v/yii2-icons": "@dev",
         "kartik-v/yii2-widget-datepicker": "@dev",
         "kartik-v/yii2-widget-select2": "@dev",
-        "kartik-v/yii2-widget-alert": "*"
+        "kartik-v/yii2-tabs-x": "*"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

@@ -5,12 +5,10 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\IndikatorNilai */
 
-$this->title = Yii::t('app', 'Update {modelClass}: ', [
-    'modelClass' => 'Indikator Nilai',
-]) . $model->idIndikatorNilai;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Indikator Nilais'), 'url' => ['index']];
+$this->title = 'Update Indikator Nilai: ' . $model->idIndikatorNilai;
+$this->params['breadcrumbs'][] = ['label' => 'Indikator Nilais', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->idIndikatorNilai, 'url' => ['view', 'id' => $model->idIndikatorNilai]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+$this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="indikator-nilai-update">
 

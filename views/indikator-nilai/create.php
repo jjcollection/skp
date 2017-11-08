@@ -1,21 +1,21 @@
 <?php
 
-use yii\helpers\Html;
+use app\models\IndikatorNilai;
+use yii\web\View;
 
+/* @var $this View */
+/* @var $model IndikatorNilai */
 
-/* @var $this yii\web\View */
-/* @var $model app\models\IndikatorNilai */
-
-$this->title = Yii::t('app', 'Create Indikator Nilai');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Indikator Nilais'), 'url' => ['index']];
+$this->title = 'Create Indikator Nilai';
+$this->params['breadcrumbs'][] = ['label' => 'Indikator Nilais', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="indikator-nilai-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?= $this->render('_form', [
+    <?=
+    $this->render('_form', [
         'model' => $model,
-    ]) ?>
+    ])
+    ?>
 
 </div>

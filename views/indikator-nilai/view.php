@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /* @var $model app\models\IndikatorNilai */
 
 $this->title = $model->idIndikatorNilai;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Indikator Nilais'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Indikator Nilais', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="indikator-nilai-view">
@@ -15,11 +15,11 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->idIndikatorNilai], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->idIndikatorNilai], [
+        <?= Html::a('Update', ['update', 'id' => $model->idIndikatorNilai], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Delete', ['delete', 'id' => $model->idIndikatorNilai], [
             'class' => 'btn btn-danger',
             'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
+                'confirm' => 'Are you sure you want to delete this item?',
                 'method' => 'post',
             ],
         ]) ?>

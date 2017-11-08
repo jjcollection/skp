@@ -31,6 +31,8 @@ class IndikatorNilai extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+             [['idFormulirMaster', 'idIndikator'], 'required'],
+            
             [['idFormulirMaster', 'idIndikator'], 'integer'],
             [['nilai'], 'number'],
             [['idFormulirMaster'], 'exist', 'skipOnError' => true, 'targetClass' => FormulirMaster::className(), 'targetAttribute' => ['idFormulirMaster' => 'idFormulirMaster']],

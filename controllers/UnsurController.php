@@ -167,8 +167,12 @@ class UnsurController extends Controller {
                     }
                     $sqlak = "select * from aturan where IdGolongan=" . $idGolongan . " and IdKriteria=2";
                     $ak = Yii::$app->db->createCommand($sqlak)->queryOne();
+                   // echo $sqlak;
+                   //exit();
                     $nilaiAK = $ak['AK'];
                     Yii::$app->session['nak'] = $nilaiAK;
+                    //echo $nilaiAK;
+                    //exit();
                     return $nilaiAK;
                 } else {
                     $this->nilai = $n;

@@ -7,7 +7,7 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\IndikatorSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Indikators');
+$this->title = 'Indikators';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="indikator-index">
@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Create Indikator'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Indikator', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

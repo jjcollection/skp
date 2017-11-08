@@ -7,8 +7,8 @@ use app\models\FormulirMasterSearch;
 use app\models\Kriteria;
 use Yii;
 use yii\filters\AccessControl;
-use yii\filters\VerbFilter;
 use yii\web\Controller;
+use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
 
 /**
@@ -23,7 +23,7 @@ class FormulirMasterController extends Controller {
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['index'],
+                'only' => ['index','kasek'],
                 'rules' => [
                     [
                         'allow' => true,
@@ -32,7 +32,7 @@ class FormulirMasterController extends Controller {
                     ],
                     [
                         'allow' => true,
-                        'actions' => ['formulir-master', 'index'],
+                        'actions' => ['formulir-master', 'index','kasek'],
                         'roles' => ['@'],
                     ],
                 ],
@@ -57,13 +57,20 @@ class FormulirMasterController extends Controller {
     }
     
     public function actionKasek() {
-        $searchModel = new FormulirMasterSearch();
-        $dataProvider = $searchModel->searchkasek(Yii::$app->request->queryParams);
+        if( Yii::$app->user->can('fmaster-kasek') )
+        {
+            $searchModel = new FormulirMasterSearch();
+            $dataProvider = $searchModel->searchkasek(Yii::$app->request->queryParams);
 
-        return $this->render('indexkasek', [
-                    'searchModel' => $searchModel,
-                    'dataProvider' => $dataProvider,
-        ]);
+            return $this->render('indexkasek', [
+                        'searchModel' => $searchModel,
+                        'dataProvider' => $dataProvider,
+            ]);
+        }
+        else
+        {
+             throw new ForbiddenHttpException;
+        }
     }
 
     /**

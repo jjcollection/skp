@@ -453,11 +453,6 @@ class FormulirController extends Controller {
             $activeSheet->setCellValue('N' . $baseUtamaFK, $value['Waktu']);
             $activeSheet->setCellValue('O' . $baseUtamaFK, 'Bulan');
             $activeSheet->setCellValue('P' . $baseUtamaFK, '-');
-            //$tes="IF((100-(N$baseUtamaFK/G$baseUtamaFK*100)):(((K$baseUtamaFK/D$baseUtamaFK*100)+(M$baseUtamaFK/F$baseUtamaFK*100)+(76-((((1,76*G$baseUtamaFK-N$baseUtamaFK)/G$baseUtamaFK)*100)-100)))):(((K$baseUtamaFK/D$baseUtamaFK*100)+(M$baseUtamaFK/F$baseUtamaFK*100)+(((1,76*G$baseUtamaFK-N$baseUtamaFK)/G$baseUtamaFK)*100))))";
-            //$activeSheet->setCellValue('Q' . $baseUtamaFK, '='.$tes);
-           // $cellValues = $objPHPExcel->getActiveSheet()->rangeToArray('Q8');
-            //$objPHPExcel->getActiveSheet()->fromArray($cellValues, null, "Q$baseUtamaFK");
-            //$formula = "=IF((100-(N$baseUtamaFK/G$baseUtamaFK*100));(((K$baseUtamaFK/D$baseUtamaFK*100)+(M$baseUtamaFK/F$baseUtamaFK*100)+(76-((((1,76*G$baseUtamaFK-N$baseUtamaFK)/G$baseUtamaFK)*100)-100))));(((K$baseUtamaFK/D$baseUtamaFK*100)+(M$baseUtamaFK/F$baseUtamaFK*100)+(((1,76*G$baseUtamaFK-N$baseUtamaFK)/G$baseUtamaFK)*100))))";
             $objPHPExcel->getActiveSheet()->getRowDimension($baseUtamaFK)->setRowHeight(70);
             $objPHPExcel->getActiveSheet()->getStyle("J8:R$baseUtamaFK")->getFont()->setSize(7);
             //$objPHPExcel->getActiveSheet()->getStyle("A8:K$baseUtama")->getFont()->setSize(9)->applyFromArray($border_style);
@@ -467,7 +462,6 @@ class FormulirController extends Controller {
         }
         $baseUtamaPenunjangFK = $baseUtamaFK + 1;
         $barisPenunjangFK = 1;
-        // $activeSheet->mergeCells('B' . $baseUtamaPenunjang . ':' . 'D' . $baseUtamaPenunjang);
         $activeSheet->setCellValue('B' . $baseUtama, '2. Unsur Penunjang');
         $objPHPExcel->getActiveSheet()->getStyle("A$baseUtama:R$baseUtama")->getFont()->setSize(7);
         $objPHPExcel->getActiveSheet()->getStyle("A$baseUtama:R$baseUtama")->applyFromArray($border_style);
@@ -479,8 +473,6 @@ class FormulirController extends Controller {
             $activeSheet->setCellValue('N' . $baseUtamaPenunjangFK, $value['Waktu']);
             $activeSheet->setCellValue('O' . $baseUtamaPenunjangFK, 'Bulan');
             $activeSheet->setCellValue('P' . $baseUtamaPenunjangFK, '-');
-           
-            // $activeSheet->setCellValue('Q'.$baseUtamaPenunjangFK,"=IF((100-(N$baseUtamaPenunjangFK/G$baseUtamaPenunjangFK*100));(((K$baseUtamaPenunjangFK/D$baseUtamaPenunjangFK*100)+(M$baseUtamaPenunjangFK/F$baseUtamaPenunjangFK*100)+(76-((((1,76*G$baseUtamaPenunjangFK-N$baseUtamaPenunjangFK)/G$baseUtamaPenunjangFK)*100)-100))));(((K$baseUtamaPenunjangFK/D$baseUtamaPenunjangFK*100)+(M$baseUtamaPenunjangFK/F$baseUtamaPenunjangFK*100)+(((1,76*G$baseUtamaPenunjangFK-N$baseUtamaPenunjangFK)/G$baseUtamaPenunjangFK)*100))))");
             $objPHPExcel->getActiveSheet()->getStyle('J' . $baseUtamaPenunjangFK . ':' . 'R' . $baseUtamaPenunjangFK)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setWrapText(true);
             $objPHPExcel->getActiveSheet()->getStyle('J' . $baseUtamaPenunjangFK . ':' . 'R' . $baseUtamaPenunjangFK)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
             $objPHPExcel->getActiveSheet()->getRowDimension($baseUtamaPenunjangFK)->setRowHeight(50);
@@ -498,31 +490,97 @@ class FormulirController extends Controller {
         $tambah1=$baseUtamaPenunjang+1;
         $ifform= '=IF(R'.$tambah.'<=50,"(Buruk)",IF(R'.$tambah.'<=60,"(Sedang)",IF(R'.$tambah.'<=75,"(Cukup)",IF(R'.$tambah.'<=90.99,"(Baik)","(Sangat Baik)"))))';
         $fres= \PHPExcel_Calculation::getInstance($objPHPExcel)->calculateFormula($ifform,'R16',$objPHPExcel->getActiveSheet()->getCell('R16'));
-        //echo $fres;
-        //exit();
         $objPHPExcel->getActiveSheet()->setCellValue('R' . $tambah1, $fres);
         $objPHPExcel->getActiveSheet()->getStyle("R$tambah1:R$tambah1")->getFont()->setSize(7);
-        
         $objPHPExcel->getActiveSheet()->getStyle('B' . $baseUtamaPenunjang . ':' . 'R' . $baseUtamaPenunjang)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setWrapText(true);
         $objPHPExcel->getActiveSheet()->getStyle('B' . $baseUtamaPenunjang . ':' . 'R' . $baseUtamaPenunjang)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
-        
         $objPHPExcel->getActiveSheet()->getStyle('R' . $tambah1 . ':' . 'R' . $tambah1)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setWrapText(true);
         $objPHPExcel->getActiveSheet()->getStyle('R' . $tambah1 . ':' . 'R' . $tambah1)->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
-           
-        //=IF(R23<=50;"(Buruk)";IF(R23<=60;"(Sedang)";IF(R23<=75;"(Cukup)";IF(R23<=90,99;"(Baik)";"(Sangat Baik)"))))
         $activeSheet->mergeCells('O18:R18');
         $activeSheet->mergeCells('O23:R23');
         $now = new \DateTime();
         $objPHPExcel->getActiveSheet()->setCellValue('O18', "Tanjungpinang,". $now->format('d-M-Y'));
         $objPHPExcel->getActiveSheet()->setCellValue('O23','(..................................................)');
-        
         $objPHPExcel->getActiveSheet()->getStyle('O18:O18')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setWrapText(true);
         $objPHPExcel->getActiveSheet()->getStyle('O18:O18')->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
-       
         $objPHPExcel->getActiveSheet()->getStyle('O23:O23')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setWrapText(true);
         $objPHPExcel->getActiveSheet()->getStyle('O23:O23')->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
         $objPHPExcel->getActiveSheet()->getStyle("O18")->getFont()->setSize(7);
         $objPHPExcel->getActiveSheet()->getStyle("O23")->getFont()->setSize(7);
+        
+        
+        
+        $objPHPExcel->setActiveSheetIndex(1);
+        $objPHPExcel->getActiveSheet()->setCellValue('F3', "='PENGUKURAN'!R$baseUtamaPenunjang"); 
+        $objPHPExcel->setActiveSheetIndex(2);
+        $sqlNilai="SELECT * FROM indikator_nilai inn inner join indikator id on inn.idIndikator=id.idIndikator where inn.IdFormulirMaster=$id";
+        $pelayanan="$sqlNilai and id.idAspek=1";
+        $indikator = Yii::$app->db->createCommand($pelayanan)->queryAll();
+        $barisnilai=6;
+        $urut=1;
+        foreach ($indikator as $value) {
+              $n=$this->pilihNilai($value['nilai'],$barisnilai);
+              $objPHPExcel->getActiveSheet()->setCellValue("B$barisnilai",$urut); 
+              $objPHPExcel->getActiveSheet()->setCellValue("C$barisnilai",  $value['namaIndikator']); 
+              $objPHPExcel->getActiveSheet()->setCellValue($n,  $value['nilai']); 
+              $barisnilai++;
+              $urut++;
+        }
+        $integritas="$sqlNilai and id.idAspek=2";
+        $indikatorintegritas = Yii::$app->db->createCommand($integritas)->queryAll();
+        $barisnilaiindikatorintegritas=22;
+        $urutindikatorintegritas=1;
+        foreach ($indikatorintegritas as $value) {
+              $n=$this->pilihNilai($value['nilai'],$barisnilaiindikatorintegritas);
+              $objPHPExcel->getActiveSheet()->setCellValue("B$barisnilaiindikatorintegritas",$urutindikatorintegritas); 
+              $objPHPExcel->getActiveSheet()->setCellValue("C$barisnilaiindikatorintegritas",  $value['namaIndikator']); 
+              $objPHPExcel->getActiveSheet()->setCellValue($n,  $value['nilai']); 
+              $barisnilaiindikatorintegritas++;
+              $urutindikatorintegritas++;
+        }
+        
+        $komitmen="$sqlNilai and id.idAspek=3";
+        $indikatorkomitmen = Yii::$app->db->createCommand($komitmen)->queryAll();
+        $barisnilaiindikatorkomitmen=40;
+        $urutindikatorkomitmen=1;
+        foreach ($indikatorkomitmen as $value) {
+              $n=$this->pilihNilai($value['nilai'],$barisnilaiindikatorkomitmen);
+              $objPHPExcel->getActiveSheet()->setCellValue("B$barisnilaiindikatorkomitmen",$urutindikatorkomitmen); 
+              $objPHPExcel->getActiveSheet()->setCellValue("C$barisnilaiindikatorkomitmen",  $value['namaIndikator']); 
+              $objPHPExcel->getActiveSheet()->setCellValue($n,  $value['nilai']); 
+              $barisnilaiindikatorkomitmen++;
+              $urutindikatorkomitmen++;
+        }
+        
+        $disiplin="$sqlNilai and id.idAspek=4";
+        $indikatordisiplin = Yii::$app->db->createCommand($disiplin)->queryAll();
+        $barisnilaiindikatordisiplin=54;
+        $urutindikatordisiplin=1;
+        foreach ($indikatordisiplin as $value) {
+              $n=$this->pilihNilai($value['nilai'],$barisnilaiindikatordisiplin);
+              $objPHPExcel->getActiveSheet()->setCellValue("B$barisnilaiindikatordisiplin",$urutindikatordisiplin); 
+              $objPHPExcel->getActiveSheet()->setCellValue("C$barisnilaiindikatordisiplin",  $value['namaIndikator']); 
+              $objPHPExcel->getActiveSheet()->setCellValue($n,  $value['nilai']); 
+              $barisnilaiindikatordisiplin++;
+              $urutindikatordisiplin++;
+        }
+        
+        $kerjasama="$sqlNilai and id.idAspek=5";
+        $indikatorkerjasama = Yii::$app->db->createCommand($kerjasama)->queryAll();
+        $barisnilaiindikatorkerjasama=66;
+        $urutindikatorkerjasama=1;
+        foreach ($indikatorkerjasama as $value) {
+              $n=$this->pilihNilai($value['nilai'],$barisnilaiindikatorkerjasama);
+              $objPHPExcel->getActiveSheet()->setCellValue("B$barisnilaiindikatorkerjasama",$urutindikatorkerjasama); 
+              $objPHPExcel->getActiveSheet()->setCellValue("C$barisnilaiindikatorkerjasama",  $value['namaIndikator']); 
+              $objPHPExcel->getActiveSheet()->setCellValue($n,  $value['nilai']); 
+              $barisnilaiindikatorkerjasama++;
+              $urutindikatorkerjasama++;
+        }
+        
+        $objPHPExcel->setActiveSheetIndex(0);
+
+
         
         header("Pragma: public");
         header("Expires: 0");
@@ -530,7 +588,6 @@ class FormulirController extends Controller {
         header("Content-Type: application/force-download");
         header("Content-Type: application/octet-stream");
         header("Content-Type: application/download");
-        ;
         header("Content-Disposition: attachment;filename=_exportHitungToExcel.xlsx");
         header("Content-Transfer-Encoding: binary ");
         $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, "Excel2007");
@@ -651,6 +708,20 @@ class FormulirController extends Controller {
         $First = $String[0];
 
         return ($First == '=' ? true : false);
+    }
+    
+    public function pilihNilai($nilai,$baris)
+    {
+        if($nilai==1)
+        {
+            return 'D'.$baris;
+        }else if($nilai==2)
+        {
+            return 'E'.$baris;
+        }else if($nilai==3)
+        {
+            return 'F'.$baris;
+        }
     }
 
 }

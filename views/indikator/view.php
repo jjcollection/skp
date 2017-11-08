@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /* @var $model app\models\Indikator */
 
 $this->title = $model->idIndikator;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Indikators'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Indikators', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="indikator-view">
@@ -15,11 +15,11 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->idIndikator], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->idIndikator], [
+        <?= Html::a('Update', ['update', 'id' => $model->idIndikator], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Delete', ['delete', 'id' => $model->idIndikator], [
             'class' => 'btn btn-danger',
             'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
+                'confirm' => 'Are you sure you want to delete this item?',
                 'method' => 'post',
             ],
         ]) ?>

@@ -44,7 +44,6 @@ Icon::map($this, Icon::WHHG);
                         ['label' => 'Profile', 'url' => ['/site/about']],
                     ];
                     if (Yii::$app->user->isGuest) {
-                      //  $menuItems[] = ['label' => 'Signup', 'url' => ['/site/signup']];
                         $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
                     } else {
                         // Yii::$app->session->remove('idFB');

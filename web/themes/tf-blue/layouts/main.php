@@ -44,7 +44,7 @@ Icon::map($this, Icon::WHHG);
                         ['label' => 'Profile', 'url' => ['/site/about']],
                     ];
                     if (Yii::$app->user->isGuest) {
-                        $menuItems[] = ['label' => 'Signup', 'url' => ['/site/signup']];
+                      //  $menuItems[] = ['label' => 'Signup', 'url' => ['/site/signup']];
                         $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
                     } else {
                         // Yii::$app->session->remove('idFB');
@@ -60,7 +60,10 @@ Icon::map($this, Icon::WHHG);
                         $cekformulir = Yii::$app->db->createCommand("select count(*) from formulir where idFormulirMaster='" . $ListformulirMaster['idFormulirMaster'] . "'")->queryScalar();
                         if ($rolename == 'kasek') {
                             $menuItems[] = ['label' => 'Formulir Pegawai', 'url' => ['/formulir-master/kasek']];
-                        } else if (($cekformulir == 0) && ($cekformulirMaster == 1)) {
+                        }else if($rolename == 'admin'){
+                             $menuItems[] = ['label' => 'Input Pegawai', 'url' => ['/site/signup']];
+                        } 
+                        else if (($cekformulir == 0) && ($cekformulirMaster == 1)) {
                             $menuItems[] = ['label' => 'Formulir', 'url' => ['/formulir/index']];
                         } else if (($cekformulir >= 1) && ($cekformulirMaster == 1)) {
                             $menuItems[] = ['label' => 'Formulir', 'url' => ['/formulir-master/index']];

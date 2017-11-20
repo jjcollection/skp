@@ -18,12 +18,16 @@ use yii\widgets\ActiveForm;
 <div class="formulir-form">
 
     <?php $form = ActiveForm::begin(); ?>
+    <?php
+    if ($model->hasErrors()) {
+        echo CHtml::errorSummary($model);
+    }
+    ?>
 
     <div class="col-lg-12">
         <?php //echo $form->textField($model, 'kodeBarang', array('size' => 60, 'maxlength' => 255, 'value' => (($model->isNewRecord) ? $model->generateKode() : $model->kodeBarang), 'readonly' => true)); ?>
         <?=
-    
-        $form->field(($model->isNewRecord) ? $model:$model->idUnsur,'IdJenisUnsur')->label('Jenis Unsur')->dropDownList(
+        $form->field(($model->isNewRecord) ? $model : $model->idUnsur, 'IdJenisUnsur')->label('Jenis Unsur')->dropDownList(
                 ArrayHelper::map(Jenisunsur::find()->all(), 'IdJenisUnsur', 'NamaUnsur'), [
             'prompt' => 'Pilih',
             'onchange' => '
@@ -34,7 +38,7 @@ use yii\widgets\ActiveForm;
         ]);
         ?>
     </div>
-    <div class="col-lg-10">
+    <div class="col-lg-12">
         <?php
         echo $form->field($model, 'IdUnsur')->label('Unsur')->dropDownList(
                 ArrayHelper::map(Unsur::find()->all(), 'IdUnsur', 'NamaUnsur'), [
@@ -46,10 +50,10 @@ use yii\widgets\ActiveForm;
                 //'class' =>'col-xs-12',
         ]);
         ?>  
-    </div>
-    <div class="col-lg-2">
+
+
         <?php
-        echo $form->field($model, 'nilai')->label('Nilai')->textInput(['readonly' => true, 'value' => 0]);
+        echo $form->field($model, 'nilai')->hiddenInput(['readonly' => true, 'value' => 0])->label(false);
         ?>
     </div>
     <div class="col-lg-2">
@@ -69,16 +73,16 @@ use yii\widgets\ActiveForm;
 //            ]
 //        ])->label('Kuantitas')->textInput(['value' => 0])
         ?>
-         <?= $form->field($model, 'Kuantitas')->textInput(['maxlength' => true]) ?>
+<?= $form->field($model, 'Kuantitas')->textInput(['maxlength' => true]) ?>
 
     </div>
     <div class="col-lg-3">
         <?= $form->field($model, 'Output')->dropDownList(Formulir::getOutput(), ['prompt' => '--Pilih--']) ?>
-        <?= $form->field($model, 'Biaya')->textInput(['value' => 0]) ?>
+<?= $form->field($model, 'Biaya')->textInput(['value' => 0]) ?>
     </div>
     <div class="col-lg-2">
         <?= $form->field($model, 'Mutu')->label('Mutu (%)')->dropDownList(range(0, 100), ['prompt' => '--Pilih--']) ?>
-        <?= $form->field($model, 'AK')->label('Angka Kredit')->textInput(['readonly' => true]) ?>
+<?= $form->field($model, 'AK')->label('Angka Kredit')->textInput(['readonly' => true]) ?>
     </div>
     <div class="col-lg-12">
 
@@ -87,14 +91,14 @@ use yii\widgets\ActiveForm;
             <?php
             $rolename = User::getRoleName();
             if ($rolename == 'kasek') {
-                echo Html::submitButton(Icon::show('pencil').'Simpan', ['formulir/createks','class' => 'btn btn-primary']);
+                echo Html::submitButton(Icon::show('pencil') . 'Simpan', ['formulir/createks', 'class' => 'btn btn-primary']);
             } else {
                 echo Html::submitButton($model->isNewRecord ? Yii::t('app', 'Simpan') : Yii::t('app', 'Ubah'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']);
             }
             ?>
         </div>
     </div>
-    <?php ActiveForm::end(); ?>
+<?php ActiveForm::end(); ?>
 </div>
 
 

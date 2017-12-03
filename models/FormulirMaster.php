@@ -36,6 +36,7 @@ class FormulirMaster extends ActiveRecord
     {
         return [
             [['tanggalBuat','idKriteria'], 'safe'],
+            [['tanggalBuat','idKriteria'], 'required'],
             [['idUser'], 'integer'],
             [['tahun'], 'string', 'max' => 20],
             [['idUser'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['idUser' => 'id']],

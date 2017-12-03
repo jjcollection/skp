@@ -21,7 +21,7 @@ $this->title = 'SKP SMPN 8 TANJUNGPINANG';
             echo Html::a(Yii::t('app', 'Pengukuran Kinerja Pegawai'), ['/formulir-master/kasek'], ['class' => 'btn btn-lg btn-primary text-center', 'style' => 'padding-right:10px;']);
         } else {
             echo "<p class=\"lead text-center\">Anda Telah berhasil Login</p>";
-            echo Html::a(Yii::t('app', 'Mulai Mengisi SKP'), ['/formulir-master/index'], ['class' => 'btn btn-lg btn-success text-center', 'style' => 'padding-right:10px;']);
+           // echo Html::a(Yii::t('app', 'Mulai Mengisi SKP'), ['/formulir-master/index'], ['class' => 'btn btn-lg btn-success text-center', 'style' => 'padding-right:10px;']);
         }
         ?>
 

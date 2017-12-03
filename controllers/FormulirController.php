@@ -465,7 +465,7 @@ class FormulirController extends Controller {
         $activeSheet->setCellValue('B' . $baseUtama, '2. Unsur Penunjang');
         $objPHPExcel->getActiveSheet()->getStyle("A$baseUtama:R$baseUtama")->getFont()->setSize(7);
         $objPHPExcel->getActiveSheet()->getStyle("A$baseUtama:R$baseUtama")->applyFromArray($border_style);
-        foreach ($formtargetPenunjangFG as $value) {
+        foreach ($formtargetPenunjangFK as $value) {
             $activeSheet->setCellValue('J' . $baseUtamaPenunjangFK, $value['AK']);
             $activeSheet->setCellValue('K' . $baseUtamaPenunjangFK, $value['Kuantitas']);
             $activeSheet->setCellValue('L' . $baseUtamaPenunjangFK, $value['Output']);
@@ -577,11 +577,7 @@ class FormulirController extends Controller {
               $barisnilaiindikatorkerjasama++;
               $urutindikatorkerjasama++;
         }
-        
         $objPHPExcel->setActiveSheetIndex(0);
-
-
-        
         header("Pragma: public");
         header("Expires: 0");
         header("Cache-Control: must-revalidate, post-check=0, pre-check=0");

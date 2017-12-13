@@ -38,7 +38,7 @@ use yii\widgets\ActiveForm;
     echo Select2::widget([
         'model' => $model,
         'attribute' => 'nilai',
-        'data' => [1 => 1, 2 => 2, 3 => 3],
+        'data' => [0 => 0, 1 => 1, 2 => 2],
         'options' => [
             'placeholder' => 'Pilih ...',
         //'multiple' => true

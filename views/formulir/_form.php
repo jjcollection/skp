@@ -81,7 +81,7 @@ use yii\widgets\ActiveForm;
 <?= $form->field($model, 'Biaya')->textInput(['value' => 0]) ?>
     </div>
     <div class="col-lg-2">
-        <?= $form->field($model, 'Mutu')->label('Mutu (%)')->dropDownList(range(0, 100), ['prompt' => '--Pilih--']) ?>
+        <?= $form->field($model, 'Mutu')->label('Mutu (%)')->dropDownList(range(50, 100), ['prompt' => '--Pilih--']) ?>
 <?= $form->field($model, 'AK')->label('Angka Kredit')->textInput(['readonly' => true]) ?>
     </div>
     <div class="col-lg-12">

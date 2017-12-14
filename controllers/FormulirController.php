@@ -368,7 +368,13 @@ class FormulirController extends Controller {
     }
 
     public function actionExportExcelHitungTarget($id) {
-        $formtargetUtamaFG = Yii::$app->db->createCommand("SELECT * FROM formulir F LEFT JOIN unsur U ON F.IdUnsur=U.IdUnsur LEFT JOIN formulir_master FM ON FM.IdFormulirMaster=F.IdFormulirMaster WHERE F.IdFormulirMaster=$id AND U.IdJenisUnsur=1 and F.jenisForm='FG'")->queryAll();
+        $formtargetUtamaFG = Yii::$app->db->createCommand("SELECT * FROM formulir F 
+        LEFT JOIN unsur U ON F.IdUnsur=U.IdUnsur 
+        LEFT JOIN formulir_master FM ON FM.IdFormulirMaster=F.IdFormulirMaster 
+        LEFT JOIN user usr ON FM.idUser=usr.id
+        LEFT JOIN golongan g ON usr.idGolongan=g.idGolongan
+        LEFT JOIN jabatan j ON usr.IdJabatan=j.IdJabatan
+        WHERE F.IdFormulirMaster=$id AND U.IdJenisUnsur=1 AND F.jenisForm='FG'")->queryAll();
         $formtargetPenunjangFG = Yii::$app->db->createCommand("SELECT * FROM formulir F INNER JOIN unsur U ON F.IdUnsur=U.IdUnsur LEFT JOIN formulir_master FM ON FM.IdFormulirMaster=F.IdFormulirMaster WHERE F.IdFormulirMaster=$id AND U.IdJenisUnsur=2 and F.jenisForm='FG'")->queryAll();
         $formtargetUtamaFK = Yii::$app->db->createCommand('SELECT * FROM formulir f INNER JOIN unsur u ON f.IdUnsur=u.IdUnsur  LEFT JOIN formulir_master fm on fm.idFormulirMaster=f.idFormulirMaster where fm.idFormulirMaster=' . $id . ' and u.IdJenisUnsur=1 and fm.idFormulirMaster=' . $id . ' and f.jenisForm="FK"')->queryAll();
         $formtargetPenunjangFK = Yii::$app->db->createCommand('SELECT * FROM formulir f LEFT JOIN unsur u ON f.IdUnsur=u.IdUnsur LEFT JOIN formulir_master fm on fm.idFormulirMaster=f.idFormulirMaster where fm.idFormulirMaster=' . $id . ' and u.IdJenisUnsur=2 and fm.idFormulirMaster=' . $id . ' and f.jenisForm="FK"')->queryAll();
@@ -404,6 +410,14 @@ class FormulirController extends Controller {
             $objPHPExcel->getActiveSheet()->getStyle("A8:R$baseUtama")->applyFromArray($border_style);
             $baris++;
             $baseUtama++;
+        }
+
+        foreach ($formtargetUtamaFG as $value) {
+            $objPHPExcel->getSheet(1)->setCellValue('P38', $value['username']);
+            $objPHPExcel->getSheet(1)->setCellValue('P39', $value['NIP']);
+            $objPHPExcel->getSheet(1)->setCellValue('P40', $value['KodeGolongan']);
+            $objPHPExcel->getSheet(1)->setCellValue('P41', $value['NamaJabatan']);
+            $objPHPExcel->getSheet(1)->setCellValue('P42', $value['UnitKerja']);
         }
 
 
@@ -486,10 +500,10 @@ class FormulirController extends Controller {
         $baseSumUkur = $baseUtamaPenunjangFK - 1;
         $objPHPExcel->getActiveSheet()->setCellValue('J' . $baseUtamaPenunjang, "=SUM(J8:J$baseSumUkur)");
         $objPHPExcel->getActiveSheet()->setCellValue('R' . $baseUtamaPenunjang, "=AVERAGE(R8:R$baseSumUkur)");
-        $tambah=$baseUtamaPenunjang;
-        $tambah1=$baseUtamaPenunjang+1;
-        $ifform= '=IF(R'.$tambah.'<=50,"(Buruk)",IF(R'.$tambah.'<=60,"(Sedang)",IF(R'.$tambah.'<=75,"(Cukup)",IF(R'.$tambah.'<=90.99,"(Baik)","(Sangat Baik)"))))';
-        $fres= \PHPExcel_Calculation::getInstance($objPHPExcel)->calculateFormula($ifform,'R16',$objPHPExcel->getActiveSheet()->getCell('R16'));
+        $tambah = $baseUtamaPenunjang;
+        $tambah1 = $baseUtamaPenunjang + 1;
+        $ifform = '=IF(R' . $tambah . '<=50,"(Buruk)",IF(R' . $tambah . '<=60,"(Sedang)",IF(R' . $tambah . '<=75,"(Cukup)",IF(R' . $tambah . '<=90.99,"(Baik)","(Sangat Baik)"))))';
+        $fres = \PHPExcel_Calculation::getInstance($objPHPExcel)->calculateFormula($ifform, 'R16', $objPHPExcel->getActiveSheet()->getCell('R16'));
         $objPHPExcel->getActiveSheet()->setCellValue('R' . $tambah1, $fres);
         $objPHPExcel->getActiveSheet()->getStyle("R$tambah1:R$tambah1")->getFont()->setSize(7);
         $objPHPExcel->getActiveSheet()->getStyle('B' . $baseUtamaPenunjang . ':' . 'R' . $baseUtamaPenunjang)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setWrapText(true);
@@ -499,83 +513,83 @@ class FormulirController extends Controller {
         $activeSheet->mergeCells('O18:R18');
         $activeSheet->mergeCells('O23:R23');
         $now = new \DateTime();
-        $objPHPExcel->getActiveSheet()->setCellValue('O18', "Tanjungpinang,". $now->format('d-M-Y'));
-        $objPHPExcel->getActiveSheet()->setCellValue('O23','(..................................................)');
+        $objPHPExcel->getActiveSheet()->setCellValue('O18', "Tanjungpinang," . $now->format('d-M-Y'));
+        $objPHPExcel->getActiveSheet()->setCellValue('O23', '(..................................................)');
         $objPHPExcel->getActiveSheet()->getStyle('O18:O18')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setWrapText(true);
         $objPHPExcel->getActiveSheet()->getStyle('O18:O18')->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
         $objPHPExcel->getActiveSheet()->getStyle('O23:O23')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setWrapText(true);
         $objPHPExcel->getActiveSheet()->getStyle('O23:O23')->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
         $objPHPExcel->getActiveSheet()->getStyle("O18")->getFont()->setSize(7);
         $objPHPExcel->getActiveSheet()->getStyle("O23")->getFont()->setSize(7);
-        
-        
-        
+
+
+
         $objPHPExcel->setActiveSheetIndex(1);
-        $objPHPExcel->getActiveSheet()->setCellValue('F3', "='PENGUKURAN'!R$baseUtamaPenunjang"); 
+        $objPHPExcel->getActiveSheet()->setCellValue('F3', "='PENGUKURAN'!R$baseUtamaPenunjang");
         $objPHPExcel->setActiveSheetIndex(2);
-        $sqlNilai="SELECT * FROM indikator_nilai inn inner join indikator id on inn.idIndikator=id.idIndikator where inn.IdFormulirMaster=$id";
-        $pelayanan="$sqlNilai and id.idAspek=1";
+        $sqlNilai = "SELECT * FROM indikator_nilai inn inner join indikator id on inn.idIndikator=id.idIndikator where inn.IdFormulirMaster=$id";
+        $pelayanan = "$sqlNilai and id.idAspek=1";
         $indikator = Yii::$app->db->createCommand($pelayanan)->queryAll();
-        $barisnilai=6;
-        $urut=1;
+        $barisnilai = 6;
+        $urut = 1;
         foreach ($indikator as $value) {
-              $n=$this->pilihNilai($value['nilai'],$barisnilai);
-              $objPHPExcel->getActiveSheet()->setCellValue("B$barisnilai",$urut); 
-              $objPHPExcel->getActiveSheet()->setCellValue("C$barisnilai",  $value['namaIndikator']); 
-              $objPHPExcel->getActiveSheet()->setCellValue($n,  $value['nilai']); 
-              $barisnilai++;
-              $urut++;
+            $n = $this->pilihNilai($value['nilai'], $barisnilai);
+            $objPHPExcel->getActiveSheet()->setCellValue("B$barisnilai", $urut);
+            $objPHPExcel->getActiveSheet()->setCellValue("C$barisnilai", $value['namaIndikator']);
+            $objPHPExcel->getActiveSheet()->setCellValue($n, $value['nilai']);
+            $barisnilai++;
+            $urut++;
         }
-        $integritas="$sqlNilai and id.idAspek=2";
+        $integritas = "$sqlNilai and id.idAspek=2";
         $indikatorintegritas = Yii::$app->db->createCommand($integritas)->queryAll();
-        $barisnilaiindikatorintegritas=22;
-        $urutindikatorintegritas=1;
+        $barisnilaiindikatorintegritas = 22;
+        $urutindikatorintegritas = 1;
         foreach ($indikatorintegritas as $value) {
-              $n=$this->pilihNilai($value['nilai'],$barisnilaiindikatorintegritas);
-              $objPHPExcel->getActiveSheet()->setCellValue("B$barisnilaiindikatorintegritas",$urutindikatorintegritas); 
-              $objPHPExcel->getActiveSheet()->setCellValue("C$barisnilaiindikatorintegritas",  $value['namaIndikator']); 
-              $objPHPExcel->getActiveSheet()->setCellValue($n,  $value['nilai']); 
-              $barisnilaiindikatorintegritas++;
-              $urutindikatorintegritas++;
+            $n = $this->pilihNilai($value['nilai'], $barisnilaiindikatorintegritas);
+            $objPHPExcel->getActiveSheet()->setCellValue("B$barisnilaiindikatorintegritas", $urutindikatorintegritas);
+            $objPHPExcel->getActiveSheet()->setCellValue("C$barisnilaiindikatorintegritas", $value['namaIndikator']);
+            $objPHPExcel->getActiveSheet()->setCellValue($n, $value['nilai']);
+            $barisnilaiindikatorintegritas++;
+            $urutindikatorintegritas++;
         }
-        
-        $komitmen="$sqlNilai and id.idAspek=3";
+
+        $komitmen = "$sqlNilai and id.idAspek=3";
         $indikatorkomitmen = Yii::$app->db->createCommand($komitmen)->queryAll();
-        $barisnilaiindikatorkomitmen=40;
-        $urutindikatorkomitmen=1;
+        $barisnilaiindikatorkomitmen = 40;
+        $urutindikatorkomitmen = 1;
         foreach ($indikatorkomitmen as $value) {
-              $n=$this->pilihNilai($value['nilai'],$barisnilaiindikatorkomitmen);
-              $objPHPExcel->getActiveSheet()->setCellValue("B$barisnilaiindikatorkomitmen",$urutindikatorkomitmen); 
-              $objPHPExcel->getActiveSheet()->setCellValue("C$barisnilaiindikatorkomitmen",  $value['namaIndikator']); 
-              $objPHPExcel->getActiveSheet()->setCellValue($n,  $value['nilai']); 
-              $barisnilaiindikatorkomitmen++;
-              $urutindikatorkomitmen++;
+            $n = $this->pilihNilai($value['nilai'], $barisnilaiindikatorkomitmen);
+            $objPHPExcel->getActiveSheet()->setCellValue("B$barisnilaiindikatorkomitmen", $urutindikatorkomitmen);
+            $objPHPExcel->getActiveSheet()->setCellValue("C$barisnilaiindikatorkomitmen", $value['namaIndikator']);
+            $objPHPExcel->getActiveSheet()->setCellValue($n, $value['nilai']);
+            $barisnilaiindikatorkomitmen++;
+            $urutindikatorkomitmen++;
         }
-        
-        $disiplin="$sqlNilai and id.idAspek=4";
+
+        $disiplin = "$sqlNilai and id.idAspek=4";
         $indikatordisiplin = Yii::$app->db->createCommand($disiplin)->queryAll();
-        $barisnilaiindikatordisiplin=54;
-        $urutindikatordisiplin=1;
+        $barisnilaiindikatordisiplin = 54;
+        $urutindikatordisiplin = 1;
         foreach ($indikatordisiplin as $value) {
-              $n=$this->pilihNilai($value['nilai'],$barisnilaiindikatordisiplin);
-              $objPHPExcel->getActiveSheet()->setCellValue("B$barisnilaiindikatordisiplin",$urutindikatordisiplin); 
-              $objPHPExcel->getActiveSheet()->setCellValue("C$barisnilaiindikatordisiplin",  $value['namaIndikator']); 
-              $objPHPExcel->getActiveSheet()->setCellValue($n,  $value['nilai']); 
-              $barisnilaiindikatordisiplin++;
-              $urutindikatordisiplin++;
+            $n = $this->pilihNilai($value['nilai'], $barisnilaiindikatordisiplin);
+            $objPHPExcel->getActiveSheet()->setCellValue("B$barisnilaiindikatordisiplin", $urutindikatordisiplin);
+            $objPHPExcel->getActiveSheet()->setCellValue("C$barisnilaiindikatordisiplin", $value['namaIndikator']);
+            $objPHPExcel->getActiveSheet()->setCellValue($n, $value['nilai']);
+            $barisnilaiindikatordisiplin++;
+            $urutindikatordisiplin++;
         }
-        
-        $kerjasama="$sqlNilai and id.idAspek=5";
+
+        $kerjasama = "$sqlNilai and id.idAspek=5";
         $indikatorkerjasama = Yii::$app->db->createCommand($kerjasama)->queryAll();
-        $barisnilaiindikatorkerjasama=66;
-        $urutindikatorkerjasama=1;
+        $barisnilaiindikatorkerjasama = 66;
+        $urutindikatorkerjasama = 1;
         foreach ($indikatorkerjasama as $value) {
-              $n=$this->pilihNilai($value['nilai'],$barisnilaiindikatorkerjasama);
-              $objPHPExcel->getActiveSheet()->setCellValue("B$barisnilaiindikatorkerjasama",$urutindikatorkerjasama); 
-              $objPHPExcel->getActiveSheet()->setCellValue("C$barisnilaiindikatorkerjasama",  $value['namaIndikator']); 
-              $objPHPExcel->getActiveSheet()->setCellValue($n,  $value['nilai']); 
-              $barisnilaiindikatorkerjasama++;
-              $urutindikatorkerjasama++;
+            $n = $this->pilihNilai($value['nilai'], $barisnilaiindikatorkerjasama);
+            $objPHPExcel->getActiveSheet()->setCellValue("B$barisnilaiindikatorkerjasama", $urutindikatorkerjasama);
+            $objPHPExcel->getActiveSheet()->setCellValue("C$barisnilaiindikatorkerjasama", $value['namaIndikator']);
+            $objPHPExcel->getActiveSheet()->setCellValue($n, $value['nilai']);
+            $barisnilaiindikatorkerjasama++;
+            $urutindikatorkerjasama++;
         }
         $objPHPExcel->setActiveSheetIndex(0);
         header("Pragma: public");
@@ -705,18 +719,14 @@ class FormulirController extends Controller {
 
         return ($First == '=' ? true : false);
     }
-    
-    public function pilihNilai($nilai,$baris)
-    {
-        if($nilai==1)
-        {
-            return 'D'.$baris;
-        }else if($nilai==2)
-        {
-            return 'E'.$baris;
-        }else if($nilai==3)
-        {
-            return 'F'.$baris;
+
+    public function pilihNilai($nilai, $baris) {
+        if ($nilai == 1) {
+            return 'D' . $baris;
+        } else if ($nilai == 2) {
+            return 'E' . $baris;
+        } else if ($nilai == 3) {
+            return 'F' . $baris;
         }
     }
 

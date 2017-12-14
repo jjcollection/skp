@@ -73,16 +73,19 @@ use yii\widgets\ActiveForm;
 //            ]
 //        ])->label('Kuantitas')->textInput(['value' => 0])
         ?>
-<?= $form->field($model, 'Kuantitas')->textInput(['maxlength' => true]) ?>
+        <?= $form->field($model, 'Kuantitas')->textInput(['maxlength' => true]) ?>
 
     </div>
     <div class="col-lg-3">
         <?= $form->field($model, 'Output')->dropDownList(Formulir::getOutput(), ['prompt' => '--Pilih--']) ?>
-<?= $form->field($model, 'Biaya')->textInput(['value' => 0]) ?>
+        <?= $form->field($model, 'Biaya')->textInput(['value' => 0]) ?>
     </div>
     <div class="col-lg-2">
-        <?= $form->field($model, 'Mutu')->label('Mutu (%)')->dropDownList(range(50, 100), ['prompt' => '--Pilih--']) ?>
-<?= $form->field($model, 'AK')->label('Angka Kredit')->textInput(['readonly' => true]) ?>
+        <?php
+        $range=range(50, 100);
+        $a= array_combine($range, $range);
+        echo $form->field($model, 'Mutu')->label('Mutu (%)')->dropDownList($a,['prompt' => '--Pilih--']) ?>
+        <?= $form->field($model, 'AK')->label('Angka Kredit')->textInput(['readonly' => true]) ?>
     </div>
     <div class="col-lg-12">
 
@@ -98,7 +101,7 @@ use yii\widgets\ActiveForm;
             ?>
         </div>
     </div>
-<?php ActiveForm::end(); ?>
+    <?php ActiveForm::end(); ?>
 </div>
 
 

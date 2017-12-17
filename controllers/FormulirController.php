@@ -413,7 +413,7 @@ class FormulirController extends Controller {
         }
 
         foreach ($formtargetUtamaFG as $value) {
-            $objPHPExcel->getSheet(1)->setCellValue('P38', $value['username']);
+            $objPHPExcel->getSheet(1)->setCellValue('P38', $value['Nama']);
             $objPHPExcel->getSheet(1)->setCellValue('P39', $value['NIP']);
             $objPHPExcel->getSheet(1)->setCellValue('P40', $value['KodeGolongan']);
             $objPHPExcel->getSheet(1)->setCellValue('P41', $value['NamaJabatan']);
@@ -513,8 +513,28 @@ class FormulirController extends Controller {
         $activeSheet->mergeCells('O18:R18');
         $activeSheet->mergeCells('O23:R23');
         $now = new \DateTime();
-        $objPHPExcel->getActiveSheet()->setCellValue('O18', "Tanjungpinang," . $now->format('d-M-Y'));
-        $objPHPExcel->getActiveSheet()->setCellValue('O23', '(..................................................)');
+        
+        $ttdtambahTgl = $baseUtamaPenunjang + 3;
+        $ttdtambahPegawai = $baseUtamaPenunjang + 4;
+        $ttdtambah1PegawaiNama = $baseUtamaPenunjang + 9;
+        $ttdtambahPegawaiNIP = $baseUtamaPenunjang + 10;
+        $tgl=date('Y-m-d');
+        $penilai = Yii::$app->db->createCommand("SELECT * FROM user u INNER JOIN jabatan j ON u.IdJabatan=j.IdJabatan INNER JOIN golongan g ON u.IdGolongan=g.IdGolongan where PejabatPenilai=1")->queryOne();
+        $left = array();
+        $left['alignment'] = array();
+        $left['alignment']['horizontal'] = \PHPExcel_Style_Alignment::HORIZONTAL_LEFT;
+        
+        $activeSheet->setCellValue('O' . $ttdtambahTgl,"Tanjungpinang,$tgl");
+        $activeSheet->setCellValue('O' . $ttdtambahPegawai,"Pejabat Penilai");
+        $activeSheet->setCellValue('O' . $ttdtambah1PegawaiNama, $penilai['Nama']);
+        $objPHPExcel->getActiveSheet()->getStyle('O' . $ttdtambah1PegawaiNama)->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('O' . $ttdtambah1PegawaiNama)->getFont()->setUnderline(true);
+        $activeSheet->setCellValue('O' . $ttdtambahPegawaiNIP, $penilai['NIP']);
+        $objPHPExcel->getActiveSheet()->getStyle('O' . $ttdtambahPegawaiNIP)->applyFromArray($left);
+        $activeSheet->mergeCells('O' . $ttdtambahPegawaiNIP . ':' . 'P' . $ttdtambahPegawaiNIP);
+        
+      //  $objPHPExcel->getActiveSheet()->setCellValue('O18', "Tanjungpinang," . $now->format('d-M-Y'));
+      //  $objPHPExcel->getActiveSheet()->setCellValue('O23', '(..................................................)');
         $objPHPExcel->getActiveSheet()->getStyle('O18:O18')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setWrapText(true);
         $objPHPExcel->getActiveSheet()->getStyle('O18:O18')->getAlignment()->setVertical(\PHPExcel_Style_Alignment::VERTICAL_CENTER);
         $objPHPExcel->getActiveSheet()->getStyle('O23:O23')->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER)->setWrapText(true);
@@ -609,8 +629,8 @@ class FormulirController extends Controller {
     public function actionExportTargetExcel($id) {
         $pegawai = Yii::$app->db->createCommand("SELECT * FROM user u INNER JOIN jabatan j ON u.IdJabatan=j.IdJabatan INNER JOIN golongan g ON u.IdGolongan=g.IdGolongan WHERE id=" . Yii::$app->user->getId())->queryOne();
         $penilai = Yii::$app->db->createCommand("SELECT * FROM user u INNER JOIN jabatan j ON u.IdJabatan=j.IdJabatan INNER JOIN golongan g ON u.IdGolongan=g.IdGolongan where PejabatPenilai=1")->queryOne();
-        $formtargetUtama = Yii::$app->db->createCommand("SELECT * FROM formulir F LEFT JOIN unsur U ON F.IdUnsur=U.IdUnsur LEFT JOIN formulir_master FM ON FM.IdFormulirMaster=F.IdFormulirMaster WHERE FM.IdFormulirMaster=$id AND U.IdJenisUnsur=1")->queryAll();
-        $formtargetPenunjang = Yii::$app->db->createCommand("SELECT * FROM formulir F INNER JOIN unsur U ON F.IdUnsur=U.IdUnsur LEFT JOIN formulir_master FM ON FM.IdFormulirMaster=F.IdFormulirMaster WHERE FM.IdFormulirMaster=$id AND U.IdJenisUnsur=2")->queryAll();
+        $formtargetUtama = Yii::$app->db->createCommand("SELECT * FROM formulir F LEFT JOIN unsur U ON F.IdUnsur=U.IdUnsur LEFT JOIN formulir_master FM ON FM.IdFormulirMaster=F.IdFormulirMaster WHERE FM.IdFormulirMaster=$id AND U.IdJenisUnsur=1 and F.jenisForm='FG'")->queryAll();
+        $formtargetPenunjang = Yii::$app->db->createCommand("SELECT * FROM formulir F INNER JOIN unsur U ON F.IdUnsur=U.IdUnsur LEFT JOIN formulir_master FM ON FM.IdFormulirMaster=F.IdFormulirMaster WHERE FM.IdFormulirMaster=$id AND U.IdJenisUnsur=2 and F.jenisForm='FG'")->queryAll();
         $objReader = \PHPExcel_IOFactory::createReader('Excel2007');
         $template = Yii::getAlias('@app/views/formulir') . '/_exportTarget.xlsx';
         $objPHPExcel = $objReader->load($template);
@@ -685,14 +705,42 @@ class FormulirController extends Controller {
             $baseUtamaPenunjang++;
         }
 
+         
+        $ttd=$baseUtamaPenunjang+2;
+        $ttdPegawai=$baseUtamaPenunjang+3;
+        $ttdPegawaiNama=$baseUtamaPenunjang+9;
+        $ttdPegawaiNIP=$baseUtamaPenunjang+10;
+        $tgl=date('Y-m-d');
         $activeSheet->mergeCells('B' . $baseUtamaPenunjang . ':' . 'D' . $baseUtamaPenunjang);
         $activeSheet->setCellValue('B' . $baseUtamaPenunjang, 'Jumlah');
+        
+        $left = array();
+        $left['alignment'] = array();
+        $left['alignment']['horizontal'] = \PHPExcel_Style_Alignment::HORIZONTAL_LEFT;
+        
+        $activeSheet->setCellValue('H' . $ttd,"Tanjungpinang,$tgl");
+        $activeSheet->setCellValue('H' . $ttdPegawai,"Pegawai Negeri Sipil yang Dinilai");
+        $activeSheet->setCellValue('H' . $ttdPegawaiNama, $pegawai['Nama']);
+        $objPHPExcel->getActiveSheet()->getStyle('H' . $ttdPegawaiNama)->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('H' . $ttdPegawaiNama)->getFont()->setUnderline(true);
+        $activeSheet->setCellValue('H' . $ttdPegawaiNIP, $pegawai['NIP']);
+        $objPHPExcel->getActiveSheet()->getStyle('H' . $ttdPegawaiNIP)->applyFromArray($left);
+        
+        
+        $activeSheet->setCellValue('C' . $ttdPegawai,"Pejabat Penilai");
+        $activeSheet->setCellValue('C' . $ttdPegawaiNama, $penilai['Nama']);
+        $objPHPExcel->getActiveSheet()->getStyle('C' . $ttdPegawaiNama)->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle('C' . $ttdPegawaiNama)->getFont()->setUnderline(true);
+        $activeSheet->setCellValue('C' . $ttdPegawaiNIP, $penilai['NIP']);
+        $objPHPExcel->getActiveSheet()->getStyle('C' . $ttdPegawaiNIP)->applyFromArray($left);
+        
         $objPHPExcel->getActiveSheet()->getStyle("A13:K$baseUtamaPenunjang")->applyFromArray($border_style);
         $activeSheet->mergeCells('F' . $baseUtamaPenunjang . ':' . 'K' . $baseUtamaPenunjang);
         $baseRata = $baseUtamaPenunjang - 1;
         $objPHPExcel->getActiveSheet()->setCellValue('E' . $baseUtamaPenunjang, "=SUM(E13:E$baseRata)");
         $objPHPExcel->getActiveSheet()->getStyle('E' . $baseUtamaPenunjang)->getAlignment()->setHorizontal(\PHPExcel_Style_Alignment::HORIZONTAL_CENTER);
 
+       
         //\PhpExcel_Calculation_Par::cloneFormulaForRow("=SUM(A1:B1)",9); //"=SUM(A9:B9)" 
 
 
